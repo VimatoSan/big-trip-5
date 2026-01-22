@@ -2,7 +2,7 @@ import {render} from './render.js';
 import SortingList from './view/sort/SortingList.js';
 import PointEditor from './view/PointEditor.js';
 import PointCreator from './view/PointCreator/PointCreator.js';
-import PointList from "./view/points/PointList";
+import PointList from './view/points/PointList.js';
 
 export default class Presenter {
   constructor(container) {
