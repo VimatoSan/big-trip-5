@@ -1,4 +1,4 @@
-import {createElement} from '../../render';
+import {createElement} from '../../../render';
 
 function createTemplate() {
   return (
@@ -19,7 +19,7 @@ function createTemplate() {
   );
 }
 
-export default class DestinationSectionView {
+export default class DestinationSection {
   getTemplate() {
     return createTemplate();
   }

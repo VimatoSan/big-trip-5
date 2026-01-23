@@ -1,4 +1,4 @@
-import {createElement, render, RenderPosition} from '../../render.js';
+import {createElement, render} from '../../render.js';
 import FilterItem from './FilterItem.js';
 
 function createFilterContainerTemplate() {
@@ -21,12 +21,10 @@ export default class FilterList {
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
-      this.filters.reverse().forEach((filterTitle) => {
+      this.filters.forEach((filterTitle) => {
         render(
           new FilterItem(filterTitle),
-          this.element,
-          RenderPosition.AFTERBEGIN
-        );
+          this.element);
       });
     }
     return this.element;

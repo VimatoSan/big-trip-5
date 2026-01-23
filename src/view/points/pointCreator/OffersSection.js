@@ -1,4 +1,4 @@
-import {createElement} from '../../render';
+import {createElement} from '../../../render';
 
 function createTemplate() {
   return (
@@ -55,7 +55,7 @@ function createTemplate() {
   );
 }
 
-export default class OffersSectionView {
+export default class OffersSection {
   getTemplate() {
     return createTemplate();
   }
