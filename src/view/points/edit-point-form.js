@@ -1,8 +1,40 @@
-import {createElement, render} from '../../../render';
-import DestinationSection from './DestinationSection.js';
-import OffersSection from './OffersSection.js';
+import {createElement, render} from '../../render.js';
+import {getRandomArrayElement, humanizeFullDate} from '../../utils.js';
+import {OFFERS_SHORT_TITLES} from '../../const.js';
 
-function createTemplate() {
+class OfferItem {
+  constructor(offer, checked) {
+    this.offer = offer;
+    this.checked = checked;
+  }
+
+  getTemplate() {
+    const isChecked = this.checked ? 'checked' : '';
+    const shortTitle = getRandomArrayElement(OFFERS_SHORT_TITLES);
+    return (
+      `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${shortTitle}-1" type="checkbox" name="event-offer-${shortTitle}" ${isChecked}>
+      <label class="event__offer-label" for="event-offer-${shortTitle}-1">
+      <span class="event__offer-title">${this.offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${this.offer.price}</span>
+      </label>
+    </div>`
+    );
+  }
+
+  getElement() {
+    if (!this.element) {
+      this.element = createElement(this.getTemplate());
+    }
+
+    return this.element;
+  }
+}
+
+
+function createTemplate(point) {
+  const {type, basePrice, date, destination} = point;
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -10,7 +42,7 @@ function createTemplate() {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -68,9 +100,9 @@ function createTemplate() {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              Flight
+              ${type.charAt(0).toUpperCase() + type.slice(1)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.city}" list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -80,10 +112,10 @@ function createTemplate() {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeFullDate(date.start)}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeFullDate(date.end)}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -91,47 +123,54 @@ function createTemplate() {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>
         </header>
         <section class="event__details">
-  <!--        Place to insert desination or offers-->
+          <section class="event__section  event__section--offers">
+            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+            <div class="event__available-offers">
+
+            </div>
+          </section>
+
+          <section class="event__section  event__section--destination">
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            <p class="event__destination-description">${destination.description}</p>
+          </section>
         </section>
       </form>
     </li>`
   );
 }
 
-export default class PointCreator {
-  constructor(offers = true, destination = true) {
-    this.offers = offers;
-    this.destination = destination;
+
+export default class EditPointForm {
+  constructor(point, pointTypeOffers) {
+    this.point = point;
+    this.typeOffers = pointTypeOffers;
   }
 
   getTemplate() {
-    return createTemplate();
+    return createTemplate(this.point);
   }
 
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
-      const sectionContainer = this.element.querySelector('.event__details');
-
-      if (this.offers) {
-        render(new OffersSection(), sectionContainer);
-      }
-      if (this.destination) {
-        render(new DestinationSection(), sectionContainer);
-      }
     }
-
+    const offersContainer = this.element.querySelector('.event__available-offers');
+    this.typeOffers.forEach((offer) => {
+      const isChecked = this.point.offers.includes(offer.id);
+      render(new OfferItem(offer, isChecked), offersContainer);
+    });
     return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

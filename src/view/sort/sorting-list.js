@@ -1,5 +1,5 @@
 import {createElement, render} from '../../render.js';
-import SortingItem from './SortingItem';
+import SortingItem from './sorting-item.js';
 
 const DEFAULT_SORTING_OPTIONS = [
   { title: 'day', disabled: false, checked: false },
@@ -41,9 +41,5 @@ export default class SortingList {
     }
 
     return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

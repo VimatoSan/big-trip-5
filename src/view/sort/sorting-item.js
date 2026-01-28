@@ -31,8 +31,4 @@ export default class SortingItem {
 
     return this.element;
   }
-
-  removeElement() {
-    this.element = null;
-  }
 }

@@ -26,9 +26,5 @@ export default class FilterItem {
 
     return this.element;
   }
-
-  removeElement() {
-    this.element = null;
-  }
 }
 

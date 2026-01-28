@@ -1,7 +1,8 @@
-import Presenter from './presenter.js';
+import Presenter from './presenter/presenter.js';
+import Model from './model/model';
+import {createMockData} from './mock/mocks.js';
 
-const filtersContainer = document.querySelector('.trip-controls__filters');
-const eventsContainer = document.querySelector('.trip-events');
 
-const board = new Presenter(eventsContainer, filtersContainer);
-board.init();
+const model = new Model(createMockData());
+const presenter = new Presenter(model);
+presenter.init();

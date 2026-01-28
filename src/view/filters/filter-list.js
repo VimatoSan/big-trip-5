@@ -1,5 +1,5 @@
 import {createElement, render} from '../../render.js';
-import FilterItem from './FilterItem.js';
+import FilterItem from './filter-item.js';
 
 function createFilterContainerTemplate() {
   return (
@@ -28,9 +28,5 @@ export default class FilterList {
       });
     }
     return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
