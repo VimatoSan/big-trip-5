@@ -1,5 +1,4 @@
-import {createElement} from '../../../framework/render.js';
-import AbstractView from "../../../framework/view/abstract-view";
+import AbstractView from '../../../framework/view/abstract-view';
 
 function createTemplate() {
   return (

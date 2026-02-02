@@ -150,7 +150,7 @@ export default class EditPointForm extends AbstractView {
   #element = null;
   #handleSubmit = null;
   #handleCloseBtnClick = null;
-  constructor(point, pointTypeOffers, onSubmit, onCloseBtnClick, escClick) {
+  constructor(point, pointTypeOffers, onSubmit, onCloseBtnClick) {
     super();
     this.point = point;
     this.typeOffers = pointTypeOffers;
