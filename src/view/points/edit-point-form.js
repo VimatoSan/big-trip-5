@@ -1,40 +1,30 @@
-import {createElement, render} from '../../render.js';
 import {getRandomArrayElement, humanizeFullDate} from '../../utils.js';
 import {OFFERS_SHORT_TITLES} from '../../const.js';
+import AbstractView from '../../framework/view/abstract-view';
 
-class OfferItem {
-  constructor(offer, checked) {
-    this.offer = offer;
-    this.checked = checked;
-  }
 
-  getTemplate() {
-    const isChecked = this.checked ? 'checked' : '';
-    const shortTitle = getRandomArrayElement(OFFERS_SHORT_TITLES);
-    return (
-      `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${shortTitle}-1" type="checkbox" name="event-offer-${shortTitle}" ${isChecked}>
+function createOfferTemplate(title, price, isChecked) {
+  const isCheckedAttr = isChecked ? 'checked' : '';
+  const shortTitle = getRandomArrayElement(OFFERS_SHORT_TITLES);
+  return (
+    `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${shortTitle}-1" type="checkbox" name="event-offer-${shortTitle}" ${isCheckedAttr}>
       <label class="event__offer-label" for="event-offer-${shortTitle}-1">
-      <span class="event__offer-title">${this.offer.title}</span>
+      <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${this.offer.price}</span>
+        <span class="event__offer-price">${price}</span>
       </label>
     </div>`
-    );
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
+  );
 }
 
 
-function createTemplate(point) {
-  const {type, basePrice, date, destination} = point;
+function createFormContainerTemplate(point, pointTypesOffers) {
+  const {type, basePrice, date, destination, offers} = point;
+  const innerOffers = pointTypesOffers.map((t) => {
+    const isChecked = offers.map((o) => o.id).includes(t.id);
+    return createOfferTemplate(t.title, t.price, isChecked);
+  }).join('');
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -137,7 +127,7 @@ function createTemplate(point) {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-
+               ${innerOffers}
             </div>
           </section>
 
@@ -152,25 +142,28 @@ function createTemplate(point) {
 }
 
 
-export default class EditPointForm {
-  constructor(point, pointTypeOffers) {
+export default class EditPointForm extends AbstractView {
+  #element = null;
+  #handleSubmit = null;
+  #handleCloseBtnClick = null;
+  constructor(point, pointTypeOffers, onSubmit, onCloseBtnClick) {
+    super();
     this.point = point;
     this.typeOffers = pointTypeOffers;
+
+    this.#handleSubmit = onSubmit;
+    this.#handleCloseBtnClick = onCloseBtnClick;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#handleCloseBtnClick);
+
   }
 
-  getTemplate() {
-    return createTemplate(this.point);
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleSubmit();
+  };
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    const offersContainer = this.element.querySelector('.event__available-offers');
-    this.typeOffers.forEach((offer) => {
-      const isChecked = this.point.offers.includes(offer.id);
-      render(new OfferItem(offer, isChecked), offersContainer);
-    });
-    return this.element;
+  get template() {
+    return createFormContainerTemplate(this.point, this.typeOffers);
   }
 }

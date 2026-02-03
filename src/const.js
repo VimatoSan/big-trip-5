@@ -20,4 +20,6 @@ const TEXT_TEMPLATE = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 
 const DATES = ['2026-01-20T14:00', '2026-01-20T14:30', '2026-01-20T15:30', '2026-01-22T10:00', '2026-01-23T18:20', '2026-02-3T00:45'];
 
-export { POINT_TYPES, OFFERS, CITIES, TEXT_TEMPLATE, DATES, OFFERS_SHORT_TITLES};
+const DEFAULT_FILTERS = ['everything', 'future', 'present', 'past'];
+
+export { POINT_TYPES, OFFERS, CITIES, TEXT_TEMPLATE, DATES, OFFERS_SHORT_TITLES, DEFAULT_FILTERS};

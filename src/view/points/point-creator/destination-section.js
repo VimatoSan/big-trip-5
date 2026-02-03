@@ -1,6 +1,4 @@
-import {createElement} from '../../../render';
-
-function createTemplate() {
+export function createDestinationSectionTemplate() {
   return (
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -17,18 +15,4 @@ function createTemplate() {
       </div>
     </section>`
   );
-}
-
-export default class DestinationSection {
-  getTemplate() {
-    return createTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
 }

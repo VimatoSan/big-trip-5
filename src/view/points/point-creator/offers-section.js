@@ -1,6 +1,4 @@
-import {createElement} from '../../../render';
-
-function createTemplate() {
+export function createOffersSectionTemplate() {
   return (
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -53,18 +51,4 @@ function createTemplate() {
       </div>
     </section>`
   );
-}
-
-export default class OffersSection {
-  getTemplate() {
-    return createTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
 }

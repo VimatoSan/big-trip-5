@@ -1,42 +1,26 @@
-import {createElement, render} from '../../render.js';
 import {humanizeDateDay, humanizeDateHour, humanizeDuration} from '../../utils.js';
+import AbstractView from '../../framework/view/abstract-view';
 
-
-class OfferItem {
-  constructor(offer) {
-    this.offer = offer;
-  }
-
-  getTemplate() {
-    return (
-      `<li class="event__offer">
-      <span class="event__offer-title">${this.offer.title}</span>
+function createOfferItemTemplate(offer) {
+  return (
+    `<li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
-      <span class="event__offer-price">${this.offer.price}</span>
+      <span class="event__offer-price">${offer.price}</span>
     </li>`);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
 }
 
-
-function createOffersTemplate() {
+function createOffersListTemplate(offers) {
   return (
     `<h4 class="visually-hidden">Offers:</h4>
-    <ul class="event__selected-offers"></ul>`
+    <ul class="event__selected-offers">${offers.map(createOfferItemTemplate).join('')}</ul>`
   );
 }
 
 function createTemplate(point) {
   const {type, basePrice, isFavourite, date, offers, destination} = point;
   const isFavouriteButton = isFavourite ? 'event__favorite-btn--active' : '';
-  const offersList = offers ? createOffersTemplate() : '';
+  const offersList = offers ? createOffersListTemplate(offers) : '';
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -71,23 +55,16 @@ function createTemplate(point) {
   );
 }
 
-export default class PointItem {
-  constructor(point) {
+export default class PointItem extends AbstractView {
+  #onClick = null;
+  constructor(point, onBtnClick) {
+    super();
     this.point = point;
+    this.#onClick = onBtnClick;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onClick);
   }
 
-  getTemplate() {
+  get template() {
     return createTemplate(this.point);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    const offersContainer = this.element.querySelector('.event__selected-offers');
-    this.point.offers.forEach((offer) => {
-      render(new OfferItem(offer), offersContainer);
-    });
-    return this.element;
   }
 }

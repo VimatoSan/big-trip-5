@@ -1,8 +1,11 @@
-import {createElement, render} from '../../../render';
-import DestinationSection from './destination-section.js';
-import OffersSection from './offers-section.js';
+import {createDestinationSectionTemplate} from './destination-section.js';
+import {createOffersSectionTemplate} from './offers-section.js';
+import AbstractView from '../../../framework/view/abstract-view.js';
 
-function createTemplate() {
+function createTemplate(isOffersSection, isDestinationSection) {
+  const offerSection = isOffersSection ? createOffersSectionTemplate() : '';
+  const destinationSection = isDestinationSection ? createDestinationSectionTemplate() : '';
+
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -98,36 +101,22 @@ function createTemplate() {
           <button class="event__reset-btn" type="reset">Cancel</button>
         </header>
         <section class="event__details">
-  <!--        Place to insert destination or offers-->
+        ${offerSection}
+        ${destinationSection}
         </section>
       </form>
     </li>`
   );
 }
 
-export default class CreatePointForm {
+export default class CreatePointForm extends AbstractView {
   constructor(offers = true, destination = true) {
+    super();
     this.offers = offers;
     this.destination = destination;
   }
 
-  getTemplate() {
-    return createTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-      const sectionContainer = this.element.querySelector('.event__details');
-
-      if (this.offers) {
-        render(new OffersSection(), sectionContainer);
-      }
-      if (this.destination) {
-        render(new DestinationSection(), sectionContainer);
-      }
-    }
-
-    return this.element;
+  get template() {
+    return createTemplate(this.offers, this.destination);
   }
 }
