@@ -1,6 +1,4 @@
-import AbstractView from '../../../framework/view/abstract-view';
-
-function createTemplate() {
+export function createOffersSectionTemplate() {
   return (
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -53,10 +51,4 @@ function createTemplate() {
       </div>
     </section>`
   );
-}
-
-export default class OffersSection extends AbstractView {
-  get template() {
-    return createTemplate();
-  }
 }

@@ -1,24 +1,27 @@
 export default class Model {
+  #offers = null;
+  #destinations = null;
+  #points = null;
   constructor(mockData) {
-    this.offers = mockData.offers;
-    this.destinations = mockData.destinations;
-    this.points = mockData.points;
+    this.#offers = mockData.offers;
+    this.#destinations = mockData.destinations;
+    this.#points = mockData.points;
   }
 
-  getPoints() {
-    return this.points;
+  get points() {
+    return this.#points;
   }
 
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
-  getDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 
   getOffersByType(type, ids = []) {
-    const offers = this.offers.find((o) => o.type === type).offers;
+    const offers = this.#offers.find((o) => o.type === type).offers;
     if (ids.length === 0) {
       return offers;
     } else {
@@ -27,6 +30,6 @@ export default class Model {
   }
 
   getDestinationById(id) {
-    return this.destinations.find((d) => d.id === id);
+    return this.#destinations.find((d) => d.id === id);
   }
 }

@@ -1,7 +1,7 @@
 import {render, replace} from '../framework/render.js';
-import SortingList from '../view/sort/sorting-list.js';
+import SortingOptions from '../view/sorting-options.js';
 import EditPointForm from '../view/points/edit-point-form.js';
-import FilterList from '../view/filters/filter-list.js';
+import FilterList from '../view/filter-list.js';
 import EventListContainer from '../view/event-list-container.js';
 import PointItem from '../view/points/point-item.js';
 
@@ -14,21 +14,14 @@ export default class Presenter {
   }
 
   init() {
-    const points = this.model.getPoints();
+    const points = this.model.points;
     this.#eventListContainer = new EventListContainer();
     render(new FilterList(), this.filtersContainer);
-    render(new SortingList(), this.eventsContainer);
+    render(new SortingOptions(), this.eventsContainer);
     render(this.#eventListContainer, this.eventsContainer);
-
-    // const editingPoint = getRandomArrayElement(points);
-    // const editingPointDestination = this.model.getDestinationById(editingPoint.destinationId);
-    // const pointTypeOffers = this.model.getOffersByType(editingPoint.type);
-    // render(new EditPointForm({...editingPoint, destination: editingPointDestination}, pointTypeOffers), eventListContainer.element);
-
     points.forEach((point) => {
       this.#renderPoint(point);
     });
-    // render(new CreatePointForm(), eventListContainer.element);
   }
 
   #renderPoint(point) {
