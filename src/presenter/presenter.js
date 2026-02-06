@@ -6,7 +6,6 @@ import {updateItem} from '../utils.js';
 
 export default class Presenter {
   #model = null;
-  #points = null;
   #eventListComponent = new EventListContainer();
   #filterListComponent = new EventListContainer();
   #sortComponent = new SortingOptions();
@@ -17,13 +16,12 @@ export default class Presenter {
 
   constructor(model) {
     this.#model = model;
-    this.#points = model.points;
   }
 
   init() {
     this.#renderFilters();
     this.#renderSort();
-    this.#renderPoints(this.#points);
+    this.#renderPoints(this.#model.points);
   }
 
   #renderFilters() {
@@ -53,7 +51,7 @@ export default class Presenter {
   };
 
   #handlePointChange = (updatedTask) => {
-    this.#model.points = updateItem(this.#points, updatedTask);
+    this.#model.points = updateItem(this.#model.points, updatedTask);
     this.#presenters.get(updatedTask.id).init(updatedTask);
   };
 }

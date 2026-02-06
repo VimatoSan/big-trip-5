@@ -97,7 +97,6 @@ export default class PointPresenter {
     if (evt.key === 'Escape') {
       evt.preventDefault();
       this.#replaceFormToCard();
-      document.removeEventListener('keydown', this.#onEscKeydown);
     }
   };
 }
