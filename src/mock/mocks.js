@@ -15,8 +15,12 @@ function createMockData() {
   const offers = generateOffers();
   const points = [];
   const generateId = createIdGenerator();
+  const allDatesIndexes = Array.from({ length: DATES.length }, (_ ,i) => i);
+  const datesIndexes = getRandomElementsFromArray(allDatesIndexes,POINT_COUNT + 1);
+  datesIndexes.sort((a, b) => a - b);
   for (let i = 0; i < POINT_COUNT; i++) {
-    const point = createPoint(offers, getRandomArrayElement(destinations));
+    const date = {start: DATES[datesIndexes[i]], end: DATES[datesIndexes[i + 1]]};
+    const point = createPoint(offers, getRandomArrayElement(destinations), date);
     points.push({id: generateId(), ...point});
   }
   return {
@@ -26,9 +30,9 @@ function createMockData() {
   };
 }
 
-function createPoint(offers, destination) {
+function createPoint(offers, destination, date) {
   const type = getRandomArrayElement(POINT_TYPES);
-  const dateIdx = generateRandomNumber(0, DATES.length - 2);
+  // const dateIdx = generateRandomNumber(0, DATES.length - 2);
   const allPointOffers = offers.find((offer) => offer.type === type);
   const selectedOffers = getRandomElementsFromArray(allPointOffers.offers, generateRandomNumber(1, allPointOffers.offers.length));
   return {
@@ -37,10 +41,7 @@ function createPoint(offers, destination) {
     offers: selectedOffers.map((offer) => offer.id),
     destinationId: destination.id,
     isFavourite: getRandomArrayElement([true, false]),
-    date: {
-      start: DATES[dateIdx],
-      end: DATES[dateIdx + 1]
-    }
+    date,
   };
 }
 
