@@ -22,4 +22,13 @@ const DATES = ['2026-01-20T14:00', '2026-01-20T14:30', '2026-01-20T15:30', '2026
 
 const DEFAULT_FILTERS = ['everything', 'future', 'present', 'past'];
 
-export { POINT_TYPES, OFFERS, CITIES, TEXT_TEMPLATE, DATES, OFFERS_SHORT_TITLES, DEFAULT_FILTERS};
+const DEFAULT_SORTING_OPTIONS = {
+  'DAY': {title: 'day', disabled: false, checked: true},
+  'EVENT': {title: 'event', disabled: true, checked: false},
+  'TIME': {title: 'time', disabled: false, checked: false},
+  'PRICE': {title: 'price', disabled: false, checked: false},
+  'OFFER': {title: 'offer', disabled: true, checked: false}
+};
+
+
+export { POINT_TYPES, OFFERS, CITIES, TEXT_TEMPLATE, DATES, OFFERS_SHORT_TITLES, DEFAULT_FILTERS, DEFAULT_SORTING_OPTIONS };

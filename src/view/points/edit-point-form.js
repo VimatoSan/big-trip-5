@@ -1,4 +1,5 @@
-import {getRandomArrayElement, humanizeFullDate} from '../../utils.js';
+import {humanizeFullDate} from '../../utils/time.js';
+import {getRandomArrayElement} from '../../utils/helpers.js';
 import {OFFERS_SHORT_TITLES} from '../../const.js';
 import AbstractView from '../../framework/view/abstract-view';
 

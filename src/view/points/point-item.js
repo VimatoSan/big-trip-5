@@ -1,4 +1,4 @@
-import {humanizeDateDay, humanizeDateHour, humanizeDuration} from '../../utils.js';
+import {humanizeDateDay, humanizeDateHour, humanizeDuration} from '../../utils/time.js';
 import AbstractView from '../../framework/view/abstract-view';
 
 function createOfferItemTemplate(offer) {

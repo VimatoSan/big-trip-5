@@ -5,7 +5,7 @@ import {
   generateText,
   getRandomArrayElement,
   getRandomElementsFromArray
-} from '../utils.js';
+} from '../utils/helpers.js';
 import {CITIES, DATES, OFFERS, POINT_TYPES} from '../const.js';
 
 const POINT_COUNT = 3;
