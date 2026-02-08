@@ -32,7 +32,6 @@ function createMockData() {
 
 function createPoint(offers, destination, date) {
   const type = getRandomArrayElement(POINT_TYPES);
-  // const dateIdx = generateRandomNumber(0, DATES.length - 2);
   const allPointOffers = offers.find((offer) => offer.type === type);
   const selectedOffers = getRandomElementsFromArray(allPointOffers.offers, generateRandomNumber(1, allPointOffers.offers.length));
   return {
