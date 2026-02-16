@@ -11,6 +11,9 @@ function createOfferItemTemplate(offer) {
 }
 
 function createOffersListTemplate(offers) {
+  if (!offers) {
+    return '';
+  }
   return (
     `<h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">${offers.map(createOfferItemTemplate).join('')}</ul>`
@@ -20,7 +23,7 @@ function createOffersListTemplate(offers) {
 function createTemplate(point) {
   const {type, basePrice, isFavourite, date, offers, destination} = point;
   const isFavouriteButton = isFavourite ? 'event__favorite-btn--active' : '';
-  const offersList = offers ? createOffersListTemplate(offers) : '';
+  const offersList = createOffersListTemplate(offers);
   return (
     `<li class="trip-events__item">
       <div class="event">

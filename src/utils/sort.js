@@ -8,4 +8,8 @@ function sortByPrice(pointA, pointB) {
   return pointB.basePrice - pointA.basePrice;
 }
 
-export { sortByTimeDuration, sortByPrice };
+function sortByDate(pointA, pointB) {
+  return durationToMinutes(pointB.date.start, pointA.date.start);
+}
+
+export { sortByTimeDuration, sortByPrice, sortByDate };

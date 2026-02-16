@@ -55,7 +55,7 @@ function generateDescriptions() {
 function createDestination(id) {
   return {
     id,
-    city: getRandomArrayElement(CITIES),
+    city: CITIES[id % CITIES.length],
     photos: generateRandomImages(generateRandomNumber(1, 7)),
     description: generateText()
   };

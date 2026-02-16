@@ -24,13 +24,22 @@ export default class Model {
     return this.#destinations;
   }
 
-  getOffersByType(type, ids = []) {
-    const offers = this.#offers.find((o) => o.type === type).offers;
-    if (ids.length === 0) {
-      return offers;
+  getOffersByType(type) {
+    return this.#offers.find((o) => o.type === type).offers;
+  }
+
+  getOffersByIds(ids, type = null) {
+    let offers;
+    if (type) {
+      offers = this.#offers.find((o) => o.type === type).offers;
     } else {
-      return offers.filter((o) => ids.includes(o.id));
+      offers = this.#offers.flatMap((o) => o.offers);
     }
+    return offers.filter((o) => ids.includes(o.id));
+  }
+
+  getDestinationByCityName(cityName) {
+    return this.#destinations.find((d) => d.city === cityName);
   }
 
   getDestinationById(id) {

@@ -28,17 +28,17 @@ export default class PointPresenter {
   }
 
   init(point) {
-    this.#point = point;
-
+    this.#point = this.#buildViewData(point);
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
-    const destination = this.#model.getDestinationById(point.destinationId);
-    const pointTypeOffers = this.#model.getOffersByType(point.type);
-    const pointOffers = this.#model.getOffersByType(point.type, point.offers);
-    const combinedPoint = {...point, offers: pointOffers, destination: destination};
-
-    this.#pointComponent = new PointItem(combinedPoint, this.#onEditClick, this.#onFavouriteClick);
-    this.#pointEditComponent = new EditPointForm(combinedPoint, pointTypeOffers, this.#onSubmitCLick, this.#onFormCloseClick);
+    this.#pointComponent = new PointItem(this.#point, this.#onEditClick, this.#onFavouriteClick);
+    this.#pointEditComponent = new EditPointForm({
+      point: this.#point,
+      onSubmit: this.#onSubmitCLick,
+      onCloseBtnClick: this.#onFormCloseClick,
+      offers: this.#model.offers,
+      destinations: this.#model.destinations,
+    });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#eventListContainerHTML);
@@ -57,6 +57,24 @@ export default class PointPresenter {
     remove(prevPointEditComponent);
   }
 
+  #buildViewData(point) {
+    const destination = this.#model.getDestinationById(point.destinationId);
+    const pointOffers = this.#model.getOffersByIds(point.offers, point.type);
+    const viewPoint = {...point, offers: pointOffers, destination: destination};
+
+    delete viewPoint.destinationId;
+    return viewPoint;
+  }
+
+  #buildModelData(point) {
+    const destinationId = point.destination.id;
+    const offers = point.offers.map((o) => o.id);
+    const modelPoint = {...point, offers, destinationId};
+
+    delete modelPoint.destination;
+    return modelPoint;
+  }
+
   destroy() {
     remove(this.#pointComponent);
     remove(this.#pointEditComponent);
@@ -69,10 +87,13 @@ export default class PointPresenter {
   }
 
   #onFavouriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavourite: !this.#point.isFavourite});
+    const updatedPoint = this.#buildModelData({...this.#point, isFavourite: !this.#point.isFavourite});
+    this.#handleDataChange(updatedPoint);
   };
 
-  #onSubmitCLick = () => {
+  #onSubmitCLick = (point) => {
+    const updatedPoint = this.#buildModelData(point);
+    this.#handleDataChange(updatedPoint);
     this.#replaceFormToCard();
   };
 

@@ -16,7 +16,7 @@ function generateRandomImages(count) {
   const selectedIds = getRandomElementsFromArray(ids, count);
   const images = [];
   for (const id of selectedIds) {
-    images.push(`https://loremflickr.com/248/152?random=${id}`);
+    images.push(`img/photos/${id % 5 + 1}.jpg`);
   }
   return images;
 }
@@ -26,6 +26,10 @@ function createIdGenerator() {
   return function () {
     return id++;
   };
+}
+
+function getObjectFromArrayById(array, id) {
+  return array.find((item) => item.id === id);
 }
 
 function generateText() {
@@ -51,4 +55,5 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
-export {getRandomArrayElement, updateItem, generateRandomNumber, generateRandomImages, generateText, getRandomElementsFromArray, createIdGenerator};
+export {getRandomArrayElement, updateItem, generateRandomNumber, generateRandomImages, generateText,
+  getRandomElementsFromArray, createIdGenerator, getObjectFromArrayById};
