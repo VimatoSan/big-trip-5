@@ -4,6 +4,10 @@ function humanizeFullDate(dueDate) {
   return dueDate ? dayjs(dueDate).format('DD/MM/YY HH:mm').toUpperCase() : '';
 }
 
+function convertToServerFormat(dueDate) {
+  return dueDate ? dayjs(dueDate).format('YYYY-MM-DDTHH:mm').toUpperCase() : '';
+}
+
 function humanizeDateDay(dueDate) {
   return dueDate ? dayjs(dueDate).format('MMM DD').toUpperCase() : '';
 }
@@ -30,4 +34,4 @@ function durationToMinutes(startTime, endTime) {
   return dayjs(endTime).diff(dayjs(startTime), 'minute');
 }
 
-export {humanizeDateDay, humanizeDateHour, humanizeDuration, humanizeFullDate, durationToMinutes};
+export {humanizeDateDay, humanizeDateHour, humanizeDuration, humanizeFullDate, durationToMinutes, convertToServerFormat};
