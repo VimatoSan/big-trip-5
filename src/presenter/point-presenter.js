@@ -34,7 +34,7 @@ export default class PointPresenter {
     this.#pointComponent = new PointItem(this.#point, this.#onEditClick, this.#onFavouriteClick);
     this.#pointEditComponent = new EditPointForm({
       point: this.#point,
-      onSubmit: this.#onSubmitCLick,
+      onSubmit: this.#onSubmitClick,
       onCloseBtnClick: this.#onFormCloseClick,
       offers: this.#model.offers,
       destinations: this.#model.destinations,
@@ -91,7 +91,7 @@ export default class PointPresenter {
     this.#handleDataChange(updatedPoint);
   };
 
-  #onSubmitCLick = (point) => {
+  #onSubmitClick = (point) => {
     const updatedPoint = this.#buildModelData(point);
     this.#handleDataChange(updatedPoint);
     this.#replaceFormToCard();

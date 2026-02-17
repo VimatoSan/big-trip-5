@@ -1,7 +1,7 @@
 import {durationToMinutes} from './time.js';
 
 function sortByTimeDuration(pointA, pointB) {
-  return durationToMinutes(pointB.date.start, pointB.date.end) - durationToMinutes(pointA.date.start, pointA.date.end);
+  return durationToMinutes(pointB.dateFrom, pointB.dateTo) - durationToMinutes(pointA.dateFrom, pointA.dateTo);
 }
 
 function sortByPrice(pointA, pointB) {
@@ -9,7 +9,7 @@ function sortByPrice(pointA, pointB) {
 }
 
 function sortByDate(pointA, pointB) {
-  return durationToMinutes(pointB.date.start, pointA.date.start);
+  return durationToMinutes(pointB.dateFrom, pointA.dateFrom);
 }
 
 export { sortByTimeDuration, sortByPrice, sortByDate };

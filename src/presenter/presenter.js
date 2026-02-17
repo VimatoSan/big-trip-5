@@ -2,7 +2,7 @@ import {render} from '../framework/render.js';
 import SortingOptions from '../view/sorting-options.js';
 import EventListContainer from '../view/event-list-container.js';
 import PointPresenter from './point-presenter.js';
-import {updateItem} from '../utils/helpers.js';
+import {getObjectFromArrayById, updateItem} from '../utils/helpers.js';
 import {DEFAULT_SORTING_OPTIONS} from '../const.js';
 import FilterList from '../view/filter-list.js';
 import {sortByDate, sortByPrice, sortByTimeDuration} from '../utils/sort.js';
@@ -65,8 +65,24 @@ export default class Presenter {
   };
 
   #handlePointChange = (updatedPoint) => {
+    const oldPoint = getObjectFromArrayById(this.#model.points, updatedPoint.id);
     this.#model.points = updateItem(this.#model.points, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+
+    if (this.#currentSortType === DEFAULT_SORTING_OPTIONS.DAY.title &&
+      (oldPoint.dateFrom !== updatedPoint.dateFrom || oldPoint.dateTo !== updatedPoint.dateTo)) {
+      this.#clearPoints();
+      this.#renderPoints(this.#model.points.sort(sortByDate));
+    } else if ((this.#currentSortType === DEFAULT_SORTING_OPTIONS.PRICE.title) &&
+      oldPoint.basePrice !== updatedPoint.basePrice) {
+      this.#clearPoints();
+      this.#renderPoints(this.#model.points.sort(sortByPrice));
+    } else if ((this.#currentSortType === DEFAULT_SORTING_OPTIONS.TIME.title) &&
+      (oldPoint.dateFrom !== updatedPoint.dateFrom || oldPoint.dateTo !== updatedPoint.dateTo)) {
+      this.#clearPoints();
+      this.#renderPoints(this.#model.points.sort(sortByTimeDuration));
+    } else {
+      this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+    }
   };
 
   #handleSortTypeChange = (sortType) => {
@@ -75,16 +91,15 @@ export default class Presenter {
     }
     this.#currentSortType = sortType;
     this.#clearPoints();
-    const copyPoints = this.#model.points.slice();
 
     if (sortType === DEFAULT_SORTING_OPTIONS.DAY.title) {
-      this.#renderPoints(copyPoints.sort(sortByDate));
+      this.#renderPoints(this.#model.points.sort(sortByDate));
     }
     if (sortType === DEFAULT_SORTING_OPTIONS.TIME.title) {
-      this.#renderPoints(copyPoints.sort(sortByTimeDuration));
+      this.#renderPoints(this.#model.points.sort(sortByTimeDuration));
     }
     if (sortType === DEFAULT_SORTING_OPTIONS.PRICE.title) {
-      this.#renderPoints(copyPoints.sort(sortByPrice));
+      this.#renderPoints(this.#model.points.sort(sortByPrice));
     }
   };
 }
