@@ -28,6 +28,8 @@ function createIdGenerator() {
   };
 }
 
+const generateId = createIdGenerator();
+
 function getObjectFromArrayById(array, id) {
   return array.find((item) => item.id === id);
 }
@@ -56,4 +58,4 @@ function updateItem(items, update) {
 }
 
 export {getRandomArrayElement, updateItem, generateRandomNumber, generateRandomImages, generateText,
-  getRandomElementsFromArray, createIdGenerator, getObjectFromArrayById};
+  getRandomElementsFromArray, getObjectFromArrayById, generateId};

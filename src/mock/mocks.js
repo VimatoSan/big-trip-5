@@ -1,5 +1,5 @@
 import {
-  createIdGenerator,
+  generateId,
   generateRandomImages,
   generateRandomNumber,
   generateText,
@@ -8,13 +8,12 @@ import {
 } from '../utils/helpers.js';
 import {CITIES, DATES, OFFERS, POINT_TYPES} from '../const.js';
 
-const POINT_COUNT = 3;
+const POINT_COUNT = 5;
 
 function createMockData() {
   const destinations = generateDescriptions();
   const offers = generateOffers();
   const points = [];
-  const generateId = createIdGenerator();
   const allDatesIndexes = Array.from({ length: DATES.length }, (_ ,i) => i);
   const datesIndexes = getRandomElementsFromArray(allDatesIndexes,POINT_COUNT + 1);
   datesIndexes.sort((a, b) => a - b);
@@ -32,9 +31,9 @@ function createMockData() {
 }
 
 function createPoint(offers, destination, dateFrom, dateTo) {
-  const type = getRandomArrayElement(POINT_TYPES);
+  const type = getRandomArrayElement(Object.values(POINT_TYPES));
   const allPointOffers = offers.find((offer) => offer.type === type);
-  const selectedOffers = getRandomElementsFromArray(allPointOffers.offers, generateRandomNumber(1, allPointOffers.offers.length));
+  const selectedOffers = getRandomElementsFromArray(allPointOffers.offers, generateRandomNumber(0, allPointOffers.offers.length));
   return {
     type,
     basePrice: generateRandomNumber(20, 400),
@@ -43,6 +42,15 @@ function createPoint(offers, destination, dateFrom, dateTo) {
     isFavourite: getRandomArrayElement([true, false]),
     dateTo,
     dateFrom
+  };
+}
+
+function createEmptyPoint() {
+  return {
+    type: POINT_TYPES.FLIGHT,
+    basePrice: 0,
+    offers: [],
+    isFavourite: false,
   };
 }
 
@@ -66,7 +74,7 @@ function createDestination(id) {
 function generateOffers() {
   const offers = [];
   const createOffer = createOfferGenerator();
-  for (const type of POINT_TYPES) {
+  for (const type of Object.values(POINT_TYPES)) {
     offers.push(createOffer(type));
   }
   return offers;
@@ -92,4 +100,4 @@ function createOfferGenerator() {
   };
 }
 
-export { createMockData };
+export { createMockData, createEmptyPoint };

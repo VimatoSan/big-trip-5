@@ -1,3 +1,5 @@
+import AbstractView from '../../../framework/view/abstract-view';
+
 function createPhotoTemplate(photo) {
   return (
     `<img class="event__photo" src="${photo}" alt="Event photo">`
@@ -28,7 +30,7 @@ function createPhotosContainerTemplate(photos) {
   );
 }
 
-export function createDestinationSectionTemplate(description, photos) {
+function createDestinationSectionTemplate(description, photos) {
   if (!description && !photos) {
     return '';
   }
@@ -42,4 +44,18 @@ export function createDestinationSectionTemplate(description, photos) {
       ${photosSection}
     </section>`
   );
+}
+
+export default class DestinationView extends AbstractView {
+  #photos = null;
+  #description = null;
+  constructor(description, photos) {
+    super();
+    this.#description = description;
+    this.#photos = photos;
+  }
+
+  get template() {
+    return createDestinationSectionTemplate(this.#description, this.#photos);
+  }
 }

@@ -1,10 +1,11 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {DEFAULT_SORTING_OPTIONS} from '../const.js';
+import {ActiveSortingOptions, SortTypes} from '../const.js';
 
-function createSortingOptionTemplate(title, disabled, checked) {
-  const label = title.charAt(0).toUpperCase() + title.slice(1);
-  const disabledAttr = disabled ? ' disabled' : '';
-  const checkedAttr = checked ? ' checked' : '';
+function createSortingOptionTemplate(title, currentSort) {
+  const label = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
+  const disabled = !ActiveSortingOptions.includes(title);
+  const disabledAttr = disabled ? 'disabled' : '';
+  const checkedAttr = title === currentSort ? ' checked' : '';
   const sortTypeDataAttr = disabled ? '' : `data-sort-type = "${title}"`;
   return (
     `<div class="trip-sort__item  trip-sort__item--${title}">
@@ -14,9 +15,9 @@ function createSortingOptionTemplate(title, disabled, checked) {
   );
 }
 
-function createSortContainerTemplate(sortingOptions) {
-  const innerOptionsTemplate = Object.values(sortingOptions).map((option) =>
-    createSortingOptionTemplate(option.title, option.disabled, option.checked)).join('');
+function createSortContainerTemplate(sortingOptions, currentSort) {
+  const innerOptionsTemplate = sortingOptions.map((option) =>
+    createSortingOptionTemplate(option, currentSort)).join('');
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     ${innerOptionsTemplate}
@@ -25,13 +26,16 @@ function createSortContainerTemplate(sortingOptions) {
 }
 
 
-export default class SortingOptions extends AbstractView {
+export default class SortView extends AbstractView {
   #handleSortTypeChange = null;
   #sortingOptions = null;
-  constructor(onSortTypeChange, sortingOptions = DEFAULT_SORTING_OPTIONS) {
+  #currentSort = null;
+
+  constructor(onSortTypeChange, currentSort = SortTypes.DAY, sortingOptions = Object.values(SortTypes)) {
     super();
     this.#handleSortTypeChange = onSortTypeChange;
     this.#sortingOptions = sortingOptions;
+    this.#currentSort = currentSort;
 
     this.element.addEventListener('click', this.#onClick);
   }
@@ -44,6 +48,6 @@ export default class SortingOptions extends AbstractView {
   };
 
   get template() {
-    return createSortContainerTemplate(this.#sortingOptions);
+    return createSortContainerTemplate(this.#sortingOptions, this.#currentSort);
   }
 }

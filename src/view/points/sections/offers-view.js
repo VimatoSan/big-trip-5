@@ -1,3 +1,5 @@
+import AbstractView from '../../../framework/view/abstract-view';
+
 function createOfferTemplate(title, id, price, isChecked) {
   const isCheckedAttr = isChecked ? 'checked' : '';
   const shortTitle = title.split(' ')[0].toLowerCase();
@@ -14,7 +16,7 @@ function createOfferTemplate(title, id, price, isChecked) {
   );
 }
 
-export function createOffersSectionTemplate(selectedOffers, pointTypeOffers) {
+function createOffersSectionTemplate(selectedOffers, pointTypeOffers) {
   if (!pointTypeOffers || pointTypeOffers.length === 0) {
     return '';
   }
@@ -33,4 +35,18 @@ export function createOffersSectionTemplate(selectedOffers, pointTypeOffers) {
       </div>
     </section>`
   );
+}
+
+export default class OffersView extends AbstractView {
+  #selectedOffers;
+  #pointTypeOffers;
+  constructor(selectedOffers, pointTypeOffers) {
+    super();
+    this.#selectedOffers = selectedOffers;
+    this.#pointTypeOffers = pointTypeOffers;
+  }
+
+  get template() {
+    return createOffersSectionTemplate(this.#selectedOffers, this.#pointTypeOffers);
+  }
 }
