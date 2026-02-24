@@ -80,6 +80,7 @@ export default class EventsPresenter {
   }
 
   #clearEvents() {
+    this.#addPointPresenter.destroy();
     remove(this.#emptyEventsComponent);
     remove(this.#sortComponent);
     this.#clearPoints();

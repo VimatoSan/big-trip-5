@@ -21,6 +21,9 @@ export default class AddPointPresenter {
   }
 
   init() {
+    if (this.#pointAddComponent !== null) {
+      return;
+    }
     this.#pointAddComponent = new EditPointView({
       point: null,
       destinations: this.#destinationsModel.destinations,
@@ -29,6 +32,7 @@ export default class AddPointPresenter {
       onSubmit: this.#onSubmit
     });
     render(this.#pointAddComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+    document.addEventListener('keydown', this.#onEscKeydown);
   }
 
   #onSubmit = (update) => {
@@ -44,12 +48,24 @@ export default class AddPointPresenter {
   };
 
   destroy() {
+    if (this.#pointAddComponent === null) {
+      return;
+    }
     remove(this.#pointAddComponent);
     const addPointButton = document.querySelector('.trip-main__event-add-btn');
     addPointButton.disabled = false;
+    document.removeEventListener('keydown', this.#onEscKeydown);
+    this.#pointAddComponent = null;
   }
 
   #onCancelClick = () => {
     this.destroy();
+  };
+
+  #onEscKeydown = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.destroy();
+    }
   };
 }
