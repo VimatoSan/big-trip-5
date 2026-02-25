@@ -94,6 +94,9 @@ export default class PointPresenter {
   };
 
   #onSubmitClick = (update) => {
+    if (!this.#pointEditComponent.isFormValid()) {
+      return;
+    }
     const isMinorUpdate = this.#point.dateFrom !== update.dateFrom || this.#point.dateTo !== update.dateTo ||
       this.#point.basePrice !== update.basePrice;
     this.#handleDataChange(

@@ -36,7 +36,7 @@ export default class AddPointPresenter {
   }
 
   #onSubmit = (update) => {
-    if (!(update.destination && update.dateFrom && update.dateTo)) {
+    if (!this.#pointAddComponent.isFormValid()) {
       return;
     }
     this.destroy();

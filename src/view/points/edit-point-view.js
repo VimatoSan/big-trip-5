@@ -216,12 +216,10 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #changeDestinationHandler = (evt) => {
-    const newDestination = this.#getDestinationByCity(evt.target.value);
-    if (newDestination) {
-      this.updateElement({
-        destination: newDestination,
-      });
-    }
+    const destination = this.#getDestinationByCity(evt.target.value);
+    this.updateElement({
+      destination,
+    });
   };
 
   #changeTypeHandler = (evt) => {
@@ -235,7 +233,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #changePriceHandler = (evt) => {
     this.updateElement({
-      basePrice: evt.target.value,
+      basePrice: Number(evt.target.value),
     });
   };
 
@@ -260,6 +258,19 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
+  isFormValid() {
+    const hasDestination = this._state.destination && this.#getDestinationByCity(this._state.destination.city);
+    const hasDates = this._state.dateFrom && this._state.dateTo
+      && durationToMinutes(this._state.dateFrom, this._state.dateTo) > 0;
+    const priceValid = this._state.basePrice !== null && this._state.basePrice >= 0;
+    return hasDestination && hasDates && priceValid;
+  }
+
+  #updateSaveButtonState() {
+    const saveBtn = this.element.querySelector('.event__save-btn[type="submit"]');
+    saveBtn.disabled = !this.isFormValid();
+  }
+
   _restoreHandlers() {
     if (!this._state.pointTypeOffers || this._state.pointTypeOffers.length !== 0) {
       this.element.querySelectorAll('.event__offer-checkbox')
@@ -277,5 +288,7 @@ export default class EditPointView extends AbstractStatefulView {
       this.element.querySelector('.event__reset-btn[type="reset"]').addEventListener('click', this.#handleCancelBtnClick);
     }
     this.#setDatepickers();
+
+    this.#updateSaveButtonState();
   }
 }
