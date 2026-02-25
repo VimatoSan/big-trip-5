@@ -58,7 +58,7 @@ function createTemplate(point) {
   );
 }
 
-export default class PointItem extends AbstractView {
+export default class PointView extends AbstractView {
   #onEditClick = null;
   #onFavouriteClick = null;
   constructor(point, onEditClick, onFavouriteClick) {

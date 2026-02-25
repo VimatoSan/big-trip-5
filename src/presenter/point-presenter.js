@@ -1,14 +1,18 @@
-import PointItem from '../view/points/point-item.js';
-import EditPointForm from '../view/points/edit-point-form.js';
+import PointView from '../view/points/point-view.js';
+import EditPointView from '../view/points/edit-point-view.js';
 import {remove, render, replace} from '../framework/render.js';
+import {UpdateType, UserAction} from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING'
 };
 
+
 export default class PointPresenter {
-  #model = null;
+  #pointsModel = null;
+  #destinationsModel = null;
+  #offersModel = null;
   #point = null;
 
   #eventListContainerHTML = null;
@@ -20,8 +24,10 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor(model, eventListContainerHTML, onDataChange, onModeChange) {
-    this.#model = model;
+  constructor({pointsModel, offersModel, destinationsModel, eventListContainerHTML, onDataChange, onModeChange}) {
+    this.#pointsModel = pointsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#eventListContainerHTML = eventListContainerHTML;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
@@ -31,13 +37,14 @@ export default class PointPresenter {
     this.#point = this.#buildViewData(point);
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
-    this.#pointComponent = new PointItem(this.#point, this.#onEditClick, this.#onFavouriteClick);
-    this.#pointEditComponent = new EditPointForm({
+    this.#pointComponent = new PointView(this.#point, this.#onEditClick, this.#onFavouriteClick);
+    this.#pointEditComponent = new EditPointView({
       point: this.#point,
       onSubmit: this.#onSubmitClick,
       onCloseBtnClick: this.#onFormCloseClick,
-      offers: this.#model.offers,
-      destinations: this.#model.destinations,
+      onDeleteClick: this.#onDeleteClick,
+      offers: this.#offersModel.offers,
+      destinations: this.#destinationsModel.destinations,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -58,21 +65,12 @@ export default class PointPresenter {
   }
 
   #buildViewData(point) {
-    const destination = this.#model.getDestinationById(point.destinationId);
-    const pointOffers = this.#model.getOffersByIds(point.offers, point.type);
+    const destination = this.#destinationsModel.getDestinationById(point.destinationId);
+    const pointOffers = this.#offersModel.getOffersByIds(point.offers, point.type);
     const viewPoint = {...point, offers: pointOffers, destination: destination};
 
     delete viewPoint.destinationId;
     return viewPoint;
-  }
-
-  #buildModelData(point) {
-    const destinationId = point.destination.id;
-    const offers = point.offers.map((o) => o.id);
-    const modelPoint = {...point, offers, destinationId};
-
-    delete modelPoint.destination;
-    return modelPoint;
   }
 
   destroy() {
@@ -87,14 +85,34 @@ export default class PointPresenter {
   }
 
   #onFavouriteClick = () => {
-    const updatedPoint = this.#buildModelData({...this.#point, isFavourite: !this.#point.isFavourite});
-    this.#handleDataChange(updatedPoint);
+    const updatedPoint = {...this.#point, isFavourite: !this.#point.isFavourite};
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      updatedPoint
+    );
   };
 
-  #onSubmitClick = (point) => {
-    const updatedPoint = this.#buildModelData(point);
-    this.#handleDataChange(updatedPoint);
+  #onSubmitClick = (update) => {
+    if (!this.#pointEditComponent.isFormValid()) {
+      return;
+    }
+    const isMinorUpdate = this.#point.dateFrom !== update.dateFrom || this.#point.dateTo !== update.dateTo ||
+      this.#point.basePrice !== update.basePrice;
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update
+    );
     this.#replaceFormToCard();
+  };
+
+  #onDeleteClick = (update) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      update
+    );
   };
 
   #onFormCloseClick = () => {
