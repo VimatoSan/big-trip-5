@@ -2,7 +2,7 @@ import AbstractView from '../../../framework/view/abstract-view';
 
 function createPhotoTemplate(photo) {
   return (
-    `<img class="event__photo" src="${photo}" alt="Event photo">`
+    `<img class="event__photo" src="${photo.src}" alt="${photo.alt}">`
   );
 }
 

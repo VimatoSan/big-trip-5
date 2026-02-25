@@ -63,6 +63,8 @@ const UpdateType = {
   PATCH: 'patch',
   MINOR: 'minor',
   MAJOR: 'major',
+  INIT: 'init',
+  ERROR: 'error',
 };
 
 const EditFormTypes = {
@@ -70,5 +72,10 @@ const EditFormTypes = {
   EDITING: 'editing',
 };
 
+const RestMethods = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
 export { POINT_TYPES, OFFERS, CITIES, TEXT_TEMPLATE, DATES, FilterTypes, SortTypes,
-  UserAction, UpdateType, ActiveSortingOptions, EditFormTypes, EmptyEventsMessages};
+  UserAction, UpdateType, ActiveSortingOptions, EditFormTypes, EmptyEventsMessages, RestMethods};

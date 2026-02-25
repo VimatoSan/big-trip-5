@@ -2,12 +2,12 @@ import AbstractView from '../../../framework/view/abstract-view';
 
 function createOfferTemplate(title, id, price, isChecked) {
   const isCheckedAttr = isChecked ? 'checked' : '';
-  const shortTitle = title.split(' ')[0].toLowerCase();
+  const eventTitle = title.toLowerCase().replaceAll(' ', '-');
   const dataOfferId = `data-offer-id = "${id}"`;
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${shortTitle}-1" type="checkbox" name="event-offer-${shortTitle}" ${isCheckedAttr} ${dataOfferId}>
-      <label class="event__offer-label" for="event-offer-${shortTitle}-1">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${eventTitle}-1" type="checkbox" name="event-offer-${eventTitle}" ${isCheckedAttr} ${dataOfferId}>
+      <label class="event__offer-label" for="event-offer-${eventTitle}-1">
       <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>

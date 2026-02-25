@@ -5,7 +5,7 @@ function humanizeFullDate(dueDate) {
 }
 
 function convertToServerFormat(dueDate) {
-  return dueDate ? dayjs(dueDate).format('YYYY-MM-DDTHH:mm').toUpperCase() : '';
+  return dueDate ? dayjs(dueDate).toISOString() : '';
 }
 
 function humanizeDateDay(dueDate) {

@@ -1,7 +1,6 @@
 import EditPointView from '../view/points/edit-point-view';
 import {remove, render, RenderPosition} from '../framework/render';
 import {UpdateType, UserAction} from '../const';
-import {generateId} from '../utils/helpers.js';
 
 export default class AddPointPresenter {
   #pointsModel = null;
@@ -12,12 +11,15 @@ export default class AddPointPresenter {
   #pointAddComponent = null;
   #handleDataChange = null;
 
-  constructor({pointsModel, destinationsModel, offersModel, onDataChange, eventListComponent}) {
+  #addPointButtonPresenter = null;
+
+  constructor({pointsModel, destinationsModel, offersModel, onDataChange, eventListComponent, addPointButtonPresenter}) {
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#eventListComponent = eventListComponent;
     this.#handleDataChange = onDataChange;
+    this.#addPointButtonPresenter = addPointButtonPresenter;
   }
 
   init() {
@@ -43,7 +45,7 @@ export default class AddPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MAJOR,
-      {id: generateId(), ...update}
+      update
     );
   };
 
@@ -52,8 +54,7 @@ export default class AddPointPresenter {
       return;
     }
     remove(this.#pointAddComponent);
-    const addPointButton = document.querySelector('.trip-main__event-add-btn');
-    addPointButton.disabled = false;
+    document.querySelector('.trip-main__event-add-btn').disabled = false;
     document.removeEventListener('keydown', this.#onEscKeydown);
     this.#pointAddComponent = null;
   }

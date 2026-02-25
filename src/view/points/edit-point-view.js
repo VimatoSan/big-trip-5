@@ -8,7 +8,6 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
-import {createEmptyPoint} from '../../mock/mocks.js';
 
 function createDestinationsListTemplate(destinations) {
   const destinationItems = destinations.map((d) => `<option value="${d.city}"><option>`).join('');
@@ -194,9 +193,18 @@ export default class EditPointView extends AbstractStatefulView {
       });
   }
 
+  #createEmptyPoint() {
+    return {
+      type: POINT_TYPES.FLIGHT,
+      basePrice: 0,
+      offers: [],
+      isFavourite: false,
+    };
+  }
+
   #parsePointToState(point) {
     if (!point) {
-      const emptyPoint = createEmptyPoint();
+      const emptyPoint = this.#createEmptyPoint();
       return {...emptyPoint,
         pointTypeOffers: this.#getOffersByType(emptyPoint.type),
         formType: EditFormTypes.ADDING,
@@ -238,7 +246,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #getOffersByType(type) {
-    return this.#offers.find((o) => o.type === type).offers;
+    return this.#offers.find((o) => o.type === type)?.offers;
   }
 
   #getDestinationByCity(city) {
@@ -246,7 +254,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #changeOfferHandler = (evt) => {
-    const id = Number(evt.target.dataset.offerId);
+    const id = evt.target.dataset.offerId;
     const pointTypeOffers = this.#getOffersByType(this._state.type);
     const newOffer = getObjectFromArrayById(pointTypeOffers, id);
     const updatedOffers = this._state.offers.map((o) => o.id).includes(id)
