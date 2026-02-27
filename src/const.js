@@ -56,6 +56,8 @@ const EditFormTypes = {
 const RestMethods = {
   GET: 'GET',
   PUT: 'PUT',
+  DELETE: 'DELETE',
+  POST: 'POST'
 };
 
 export { POINT_TYPES, FilterTypes, SortTypes,
