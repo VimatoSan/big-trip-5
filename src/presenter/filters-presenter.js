@@ -4,20 +4,28 @@ import {UpdateType} from '../const.js';
 
 export default class FiltersPresenter {
   #filtersModel = null;
+  #pointsModel = null;
   #currentFilter = null;
   #filtersComponent = null;
+  #isLoading = true;
   #filtersContainerHTML = document.querySelector('.trip-controls__filters');
 
-  constructor(filtersModel) {
+  constructor({filtersModel, pointsModel}) {
     this.#filtersModel = filtersModel;
+    this.#pointsModel = pointsModel;
     this.#currentFilter = filtersModel.filter;
+    this.#pointsModel.addObserver(this.#handleModelChange);
     this.#filtersModel.addObserver(this.#handleModelChange);
   }
 
   init() {
     const prevFiltersComponent = this.#filtersComponent;
 
-    this.#filtersComponent = new FiltersView({onChange: this.#handleFilterTypeChange, currentFilter: this.#filtersModel.filter});
+    if (this.#isLoading) {
+      this.#filtersComponent = new FiltersView({disabled: true});
+    } else {
+      this.#filtersComponent = new FiltersView({onChange: this.#handleFilterTypeChange, currentFilter: this.#filtersModel.filter});
+    }
 
     if (prevFiltersComponent === null) {
       render(this.#filtersComponent, this.#filtersContainerHTML);
@@ -37,6 +45,9 @@ export default class FiltersPresenter {
   };
 
   #handleModelChange = (updateType, data) => {
+    if (updateType === UpdateType.INIT) {
+      this.#isLoading = false;
+    }
     if (data === this.#currentFilter) {
       return;
     }

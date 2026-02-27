@@ -1,8 +1,21 @@
 export default class OffersModel {
-  #offers = null;
+  #offers = [];
+  #offersApiService = null;
+  constructor(offersApiService) {
+    this.#offersApiService = offersApiService;
+  }
 
-  constructor(offers) {
-    this.#offers = offers;
+  clear() {
+    this.#offers = [];
+  }
+
+  async init() {
+    try {
+      this.#offers = await this.#offersApiService.offers;
+    } catch (err) {
+      this.#offers = [];
+      throw err;
+    }
   }
 
   get offers() {
@@ -12,10 +25,10 @@ export default class OffersModel {
   getOffersByIds(ids, type = null) {
     let offers;
     if (type) {
-      offers = this.#offers.find((o) => o.type === type).offers;
+      offers = this.#offers.find((o) => o.type === type)?.offers;
     } else {
       offers = this.#offers.flatMap((o) => o.offers);
     }
-    return offers.filter((o) => ids.includes(o.id));
+    return offers ? offers.filter((o) => ids.includes(o.id)) : [];
   }
 }

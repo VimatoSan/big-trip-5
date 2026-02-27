@@ -7,6 +7,7 @@ import {filter} from '../utils/filter.js';
 import EmptyEventsView from '../view/empty-events-view.js';
 import AddPointPresenter from './add-point-presenter';
 import EventListView from '../view/event-list-view';
+import LoadingView from '../view/loading-view';
 
 export default class EventsPresenter {
   #pointsModel = null;
@@ -15,6 +16,8 @@ export default class EventsPresenter {
   #filtersModel = null;
 
   #eventsContainerHTML = document.querySelector('.trip-events');
+
+  #loadingComponent = new LoadingView();
   #eventListComponent = new EventListView();
   #sortComponent = null;
   #emptyEventsComponent = null;
@@ -22,6 +25,8 @@ export default class EventsPresenter {
   #addPointPresenter = null;
   #pointPresenters = new Map();
   #currentSortType = SortTypes.DAY;
+
+  #isLoading = true;
 
   constructor({pointsModel, destinationsModel, offersModel, filtersModel}) {
     this.#pointsModel = pointsModel;
@@ -33,7 +38,7 @@ export default class EventsPresenter {
       destinationsModel,
       offersModel,
       eventListComponent: this.#eventListComponent,
-      onDataChange: this.#handleViewAction
+      onDataChange: this.#handleViewAction,
     });
   }
 
@@ -69,7 +74,17 @@ export default class EventsPresenter {
     render(this.#emptyEventsComponent, this.#eventsContainerHTML);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent , this.#eventsContainerHTML);
+  }
+
   #renderEvents() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      document.querySelector('.trip-main__event-add-btn').disabled = true;
+      return;
+    }
+
     if (this.points.length === 0) {
       this.#renderEmptyEvents();
       return;
@@ -82,6 +97,7 @@ export default class EventsPresenter {
   #clearEvents() {
     this.#addPointPresenter.destroy();
     remove(this.#emptyEventsComponent);
+    remove(this.#loadingComponent);
     remove(this.#sortComponent);
     this.#clearPoints();
   }
@@ -147,6 +163,11 @@ export default class EventsPresenter {
     }
   };
 
+  #renderError() {
+    const errorMessageComponent = new EmptyEventsView('Error while loading from server');
+    render(errorMessageComponent, this.#eventsContainerHTML);
+  }
+
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH: {
@@ -166,6 +187,21 @@ export default class EventsPresenter {
       case UpdateType.MAJOR: {
         this.#clearEvents();
         this.#renderEvents();
+        break;
+      }
+      case UpdateType.INIT: {
+        this.#isLoading = false;
+        document.querySelector('.trip-main__event-add-btn').disabled = false;
+        remove(this.#loadingComponent);
+        this.#renderEvents();
+        break;
+      }
+      case UpdateType.ERROR: {
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#filtersModel.removeObserver(this.#handleModelEvent);
+        this.#pointsModel.removeObserver(this.#handleModelEvent);
+        this.#renderError();
         break;
       }
     }

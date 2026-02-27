@@ -1,22 +1,36 @@
 import EventsPresenter from './presenter/events-presenter.js';
-import {createMockData} from './mock/mocks.js';
 import FiltersModel from './model/filters-model.js';
 import PointsModel from './model/points-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import FiltersPresenter from './presenter/filters-presenter.js';
+import PointsApiService from './service/points-api-service.js';
+import DestinationsApiService from './service/destinations-api-service.js';
+import OffersApiService from './service/offers-api-service.js';
 
-const mocks = createMockData();
+const BASE_URL = 'https://24.objects.htmlacademy.pro/big-trip';
+const AUTH_TOKEN = 'Basic 8hfekcmmddld';
 
-const pointsModel = new PointsModel(mocks.points);
-const offersModel = new OffersModel(mocks.offers);
-const destinationsModel = new DestinationsModel(mocks.destinations);
+const pointApiService = new PointsApiService(BASE_URL, AUTH_TOKEN);
+const offersApiService = new OffersApiService(BASE_URL, AUTH_TOKEN);
+const destinationsApiService = new DestinationsApiService(BASE_URL, AUTH_TOKEN);
+
+const pointsModel = new PointsModel(pointApiService);
+const offersModel = new OffersModel(offersApiService);
+const destinationsModel = new DestinationsModel(destinationsApiService);
 const filtersModel = new FiltersModel();
 
-
+offersModel.init()
+  .then(() => destinationsModel.init())
+  .then(() => pointsModel.init())
+  .catch(() => {
+    offersModel.clear();
+    destinationsModel.clear();
+    pointsModel.clear();
+  });
 const eventsPresenter = new EventsPresenter(
   {pointsModel, destinationsModel, offersModel, filtersModel});
-const filtersPresenter = new FiltersPresenter(filtersModel);
+const filtersPresenter = new FiltersPresenter({filtersModel, pointsModel});
 
 const addPointButton = document.querySelector('.trip-main__event-add-btn');
 addPointButton.addEventListener('click', () => {
