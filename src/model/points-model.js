@@ -18,29 +18,11 @@ export default class PointsModel extends Observable {
   async init() {
     try {
       const points = await this.#pointsApiService.points;
-      this.points = points.map(this.#adaptToClient);
+      this.points = points.map(this.#pointsApiService.adaptToClient);
     } catch (err) {
       this.points = [];
     }
     this._notify(UpdateType.INIT);
-  }
-
-  #adaptToClient(point) {
-    const adaptedPoint = {...point,
-      basePrice: point['base_price'],
-      dateFrom: point['date_from'],
-      dateTo: point['date_to'],
-      isFavourite: point['is_favorite'],
-      destinationId: point['destination'],
-    };
-
-    delete adaptedPoint['base_price'];
-    delete adaptedPoint['date_from'];
-    delete adaptedPoint['date_to'];
-    delete adaptedPoint['is_favorite'];
-    delete adaptedPoint['destination'];
-
-    return adaptedPoint;
   }
 
   async updatePoint(updateType, update) {
@@ -51,7 +33,7 @@ export default class PointsModel extends Observable {
     }
     try {
       const response = await this.#pointsApiService.updatePoint(update);
-      const updatedPoint = this.#adaptToClient(response);
+      const updatedPoint = this.#pointsApiService.adaptToClient(response);
       this.#points = [
         ...this.#points.slice(0, index),
         updatedPoint,
@@ -66,8 +48,7 @@ export default class PointsModel extends Observable {
 
   async addPoint(updateType, update) {
     try {
-      const response = await this.#pointsApiService.addPoint(update);
-      const addedPoint = this.#adaptToClient(response);
+      const addedPoint = await this.#pointsApiService.addPoint(update);
       this.#points = [addedPoint, ...this.#points];
 
       this._notify(updateType, update);
