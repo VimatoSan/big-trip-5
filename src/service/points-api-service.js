@@ -17,6 +17,24 @@ export default class PointsApiService extends ApiService {
     return await ApiService.parseResponse(response);
   }
 
+  adaptToClient(point) {
+    const adaptedPoint = {...point,
+      basePrice: point['base_price'],
+      dateFrom: point['date_from'],
+      dateTo: point['date_to'],
+      isFavourite: point['is_favorite'],
+      destinationId: point['destination'],
+    };
+
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
+    delete adaptedPoint['destination'];
+
+    return adaptedPoint;
+  }
+
   #adaptToServer(point) {
     const adaptedPoint = {...point,
       'base_price': point.basePrice,

@@ -29,6 +29,6 @@ export default class OffersModel {
     } else {
       offers = this.#offers.flatMap((o) => o.offers);
     }
-    return offers?.filter((o) => ids.includes(o.id));
+    return offers ? offers.filter((o) => ids.includes(o.id)) : [];
   }
 }
