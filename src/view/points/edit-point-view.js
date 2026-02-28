@@ -155,7 +155,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   get template() {
-    return createFormContainerTemplate(this._state, this.#destinations, true);
+    return createFormContainerTemplate(this._state, this.#destinations);
   }
 
   removeElement() {
