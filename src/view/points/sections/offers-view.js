@@ -46,6 +46,7 @@ export default class OffersView extends AbstractView {
     super();
     this.#selectedOffers = selectedOffers;
     this.#pointTypeOffers = pointTypeOffers;
+    this.#isDisabled = isDisabled;
   }
 
   get template() {

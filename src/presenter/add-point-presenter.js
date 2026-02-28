@@ -11,15 +11,13 @@ export default class AddPointPresenter {
   #pointAddComponent = null;
   #handleDataChange = null;
 
-  #addPointButtonPresenter = null;
 
-  constructor({pointsModel, destinationsModel, offersModel, onDataChange, eventListComponent, addPointButtonPresenter}) {
+  constructor({pointsModel, destinationsModel, offersModel, onDataChange, eventListComponent}) {
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#eventListComponent = eventListComponent;
     this.#handleDataChange = onDataChange;
-    this.#addPointButtonPresenter = addPointButtonPresenter;
   }
 
   init() {
@@ -69,4 +67,16 @@ export default class AddPointPresenter {
       this.destroy();
     }
   };
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointAddComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointAddComponent.shake(resetFormState);
+  }
 }

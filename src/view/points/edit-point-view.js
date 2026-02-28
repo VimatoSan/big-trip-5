@@ -51,9 +51,16 @@ function createOfferTypeSelector(offerType) {
   );
 }
 
-function createFormContainerTemplate(state, destinations, isDisabled) {
-  const {type, basePrice, dateFrom, dateTo, destination, offers, pointTypeOffers} = state;
-  const resetButtonTitle = state.formType === EditFormTypes.ADDING ? 'Cancel' : 'Delete';
+function createFormContainerTemplate(state, destinations) {
+  const {type, basePrice, dateFrom, dateTo, destination, offers, pointTypeOffers, isDisabled, isSaving, isDeleting} = state;
+  let resetButtonTitle;
+  if (state.formType === EditFormTypes.ADDING) {
+    resetButtonTitle = 'Cancel';
+  } else if (isDeleting) {
+    resetButtonTitle = 'Deleting…';
+  } else {
+    resetButtonTitle = 'Delete';
+  }
   const closeButton = createCloseBtnTemplate(state, isDisabled);
 
   const destinationsList = createDestinationsListTemplate(destinations);
@@ -98,7 +105,7 @@ function createFormContainerTemplate(state, destinations, isDisabled) {
             <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value=${basePrice} ${isDisabled ? 'disabled' : ''}>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>Save</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'saving...' : 'save'}</button>
           <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${resetButtonTitle}</button>
           ${closeButton}
         </header>
@@ -148,7 +155,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   get template() {
-    return createFormContainerTemplate(this._state, this.#destinations);
+    return createFormContainerTemplate(this._state, this.#destinations, true);
   }
 
   removeElement() {
@@ -203,21 +210,27 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #parsePointToState(point) {
+    let formType;
     if (!point) {
-      const emptyPoint = this.#createEmptyPoint();
-      return {...emptyPoint,
-        pointTypeOffers: this.#getOffersByType(emptyPoint.type),
-        formType: EditFormTypes.ADDING,
-      };
+      point = this.#createEmptyPoint();
+      formType = EditFormTypes.ADDING;
+    } else {
+      formType = EditFormTypes.EDITING;
     }
     return {...point,
       pointTypeOffers: this.#getOffersByType(point.type),
-      formType: EditFormTypes.EDITING,
+      formType,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
   #parseStateToPoint(state) {
     const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
     delete point.pointTypeOffers;
     delete point.formType;
     return point;
@@ -276,7 +289,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #updateSaveButtonState() {
     const saveBtn = this.element.querySelector('.event__save-btn[type="submit"]');
-    saveBtn.disabled = !this.isFormValid();
+    saveBtn.disabled = !this.isFormValid() || this._state.isDisabled;
   }
 
   _restoreHandlers() {

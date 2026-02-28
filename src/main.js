@@ -23,7 +23,8 @@ const filtersModel = new FiltersModel();
 offersModel.init()
   .then(() => destinationsModel.init())
   .then(() => pointsModel.init())
-  .catch(() => {
+  .catch((e) => {
+    console.log(e)
     offersModel.clear();
     destinationsModel.clear();
     pointsModel.clear();
