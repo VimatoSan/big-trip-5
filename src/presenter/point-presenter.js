@@ -58,7 +58,6 @@ export default class PointPresenter {
 
     if (this.#mode === Mode.EDITING) {
       replace(this.#pointEditComponent, prevPointEditComponent);
-      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -145,17 +144,21 @@ export default class PointPresenter {
   };
 
   setSaving() {
-    this.#pointEditComponent.updateElement ({
-      isDisabled: true,
-      isSaving: true,
-    });
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement ({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
   }
 
   setDeleting() {
-    this.#pointEditComponent.updateElement ({
-      isDisabled: true,
-      isDeleting: true,
-    });
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement ({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
   }
 
   setAborting() {

@@ -39,7 +39,6 @@ export default class AddPointPresenter {
     if (!this.#pointAddComponent.isFormValid()) {
       return;
     }
-    this.destroy();
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MAJOR,
@@ -67,6 +66,13 @@ export default class AddPointPresenter {
       this.destroy();
     }
   };
+
+  setSaving() {
+    this.#pointAddComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
 
   setAborting() {
     const resetFormState = () => {

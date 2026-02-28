@@ -164,17 +164,18 @@ export default class EventsPresenter {
         this.#pointPresenters.get(modelUpdate.id).setSaving();
         try {
           await this.#pointsModel.updatePoint(updateType, modelUpdate);
+          this.#pointPresenters.get(modelUpdate.id).resetView();
         } catch (err) {
           this.#pointPresenters.get(modelUpdate.id).setAborting();
         }
         break;
       }
       case UserAction.ADD_POINT: {
-        this.#pointPresenters.get(viewUpdate.id).setSaving();
+        this.#addPointPresenter.setSaving();
         try {
           await this.#pointsModel.addPoint(updateType, modelUpdate);
         } catch (err) {
-          this.#pointPresenters.get(modelUpdate.id).setAborting();
+          this.#addPointPresenter.setAborting();
         }
         break;
       }
