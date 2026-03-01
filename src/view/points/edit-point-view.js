@@ -17,12 +17,12 @@ function createDestinationsListTemplate(destinations) {
     </datalist>`);
 }
 
-function createCloseBtnTemplate(state) {
+function createCloseBtnTemplate(state, isDisabled) {
   if (state.formType === EditFormTypes.ADDING) {
     return '';
   }
   return (
-    `<button class="event__rollup-btn" type="button">
+    `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
       <span class="visually-hidden">Open event</span>
      </button>`);
 }
@@ -52,24 +52,31 @@ function createOfferTypeSelector(offerType) {
 }
 
 function createFormContainerTemplate(state, destinations) {
-  const {type, basePrice, dateFrom, dateTo, destination, offers, pointTypeOffers} = state;
-  const resetButtonTitle = state.formType === EditFormTypes.ADDING ? 'Cancel' : 'Delete';
-  const closeButton = createCloseBtnTemplate(state);
+  const {type, basePrice, dateFrom, dateTo, destination, offers, pointTypeOffers, isDisabled, isSaving, isDeleting} = state;
+  let resetButtonTitle;
+  if (state.formType === EditFormTypes.ADDING) {
+    resetButtonTitle = 'Cancel';
+  } else if (isDeleting) {
+    resetButtonTitle = 'Deleting…';
+  } else {
+    resetButtonTitle = 'Delete';
+  }
+  const closeButton = createCloseBtnTemplate(state, isDisabled);
 
   const destinationsList = createDestinationsListTemplate(destinations);
-  const offersSection = new OffersView(offers, pointTypeOffers).template;
+  const offersSection = new OffersView(offers, pointTypeOffers, isDisabled).template;
   const destinationSection = new DestinationView(destination?.description, destination?.photos).template;
   const typeList = createOfferTypeSelector(type);
   return (
     `<li class="trip-events__item">
-      <form class="event event--edit" action="#" method="post">
+      <form class="event event--edit" action="#" method="post" ${isDisabled ? 'disabled' : ''}>
         <header class="event__header">
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
             ${typeList}
           </div>
@@ -78,16 +85,16 @@ function createFormContainerTemplate(state, destinations) {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type?.charAt(0).toUpperCase() + type?.slice(1)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination?.city || ''}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" ${isDisabled ? 'disabled' : ''} value="${destination?.city || ''}" list="destination-list-1">
             ${destinationsList}
           </div>
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeFullDate(dateFrom)}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeFullDate(dateFrom)}" ${isDisabled ? 'disabled' : ''}>
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeFullDate(dateTo)}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeFullDate(dateTo)}" ${isDisabled ? 'disabled' : ''}>
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -95,11 +102,11 @@ function createFormContainerTemplate(state, destinations) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" min="0">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" min="0" ${isDisabled ? 'disabled' : ''}>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${resetButtonTitle}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'saving...' : 'save'}</button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${resetButtonTitle}</button>
           ${closeButton}
         </header>
         <section class="event__details">
@@ -203,21 +210,27 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #parsePointToState(point) {
+    let formType;
     if (!point) {
-      const emptyPoint = this.#createEmptyPoint();
-      return {...emptyPoint,
-        pointTypeOffers: this.#getOffersByType(emptyPoint.type),
-        formType: EditFormTypes.ADDING,
-      };
+      point = this.#createEmptyPoint();
+      formType = EditFormTypes.ADDING;
+    } else {
+      formType = EditFormTypes.EDITING;
     }
     return {...point,
       pointTypeOffers: this.#getOffersByType(point.type),
-      formType: EditFormTypes.EDITING,
+      formType,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
   #parseStateToPoint(state) {
     const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
     delete point.pointTypeOffers;
     delete point.formType;
     return point;
@@ -240,7 +253,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #changePriceHandler = (evt) => {
-    this._setState({
+    this.updateElement({
       basePrice: Number(evt.target.value),
     });
   };
@@ -270,13 +283,13 @@ export default class EditPointView extends AbstractStatefulView {
     const hasDestination = this._state.destination && this.#getDestinationByCity(this._state.destination.city);
     const hasDates = this._state.dateFrom && this._state.dateTo
       && durationToMinutes(this._state.dateFrom, this._state.dateTo) > 0;
-    const priceValid = this._state.basePrice !== null && this._state.basePrice >= 0;
+    const priceValid = this._state.basePrice !== null && this._state.basePrice > 0;
     return hasDestination && hasDates && priceValid;
   }
 
   #updateSaveButtonState() {
     const saveBtn = this.element.querySelector('.event__save-btn[type="submit"]');
-    saveBtn.disabled = !this.isFormValid();
+    saveBtn.disabled = !this.isFormValid() || this._state.isDisabled;
   }
 
   _restoreHandlers() {

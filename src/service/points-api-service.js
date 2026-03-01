@@ -17,22 +17,21 @@ export default class PointsApiService extends ApiService {
     return await ApiService.parseResponse(response);
   }
 
-  adaptToClient(point) {
-    const adaptedPoint = {...point,
-      basePrice: point['base_price'],
-      dateFrom: point['date_from'],
-      dateTo: point['date_to'],
-      isFavourite: point['is_favorite'],
-      destinationId: point['destination'],
-    };
+  async addPoint(point) {
+    const response = await this._load({
+      url: 'points',
+      method: RestMethods.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+    return await ApiService.parseResponse(response);
+  }
 
-    delete adaptedPoint['base_price'];
-    delete adaptedPoint['date_from'];
-    delete adaptedPoint['date_to'];
-    delete adaptedPoint['is_favorite'];
-    delete adaptedPoint['destination'];
-
-    return adaptedPoint;
+  async deletePoint(point) {
+    return await this._load({
+      url: `points/${point.id}`,
+      method: RestMethods.DELETE,
+    });
   }
 
   #adaptToServer(point) {
@@ -49,6 +48,24 @@ export default class PointsApiService extends ApiService {
     delete adaptedPoint.dateTo;
     delete adaptedPoint.isFavourite;
     delete adaptedPoint.destinationId;
+
+    return adaptedPoint;
+  }
+
+  adaptToClient(point) {
+    const adaptedPoint = {...point,
+      basePrice: point['base_price'],
+      dateFrom: point['date_from'],
+      dateTo: point['date_to'],
+      isFavourite: point['is_favorite'],
+      destinationId: point['destination'],
+    };
+
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
+    delete adaptedPoint['destination'];
 
     return adaptedPoint;
   }
